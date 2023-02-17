@@ -3,10 +3,11 @@ import { useState } from 'react'
 import './App.css'
 import { Configuration, OpenAIApi } from 'openai'
 import getConfig from 'next/config'
-import pp from './../public/placeholder_person.svg'
 
 export default function App({ Component, pageProps }: AppProps) {
-  const [imgURL, setImgURL] = useState(pp)
+  const [imgURL, setImgURL] = useState(
+    'https://www.seekpng.com/ima/u2y3q8t4t4i1q8u2/',
+  )
   //console.log(imgURL)
 
   const { publicRuntimeConfig } = getConfig()
