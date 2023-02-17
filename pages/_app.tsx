@@ -5,9 +5,7 @@ import { Configuration, OpenAIApi } from 'openai'
 import getConfig from 'next/config'
 
 export default function App({ Component, pageProps }: AppProps) {
-  const [imgURL, setImgURL] = useState(
-    'https://www.seekpng.com/ima/u2y3q8t4t4i1q8u2/',
-  )
+  const [imgURL, setImgURL] = useState('/robot-painting_svg.svg')
   //console.log(imgURL)
 
   const { publicRuntimeConfig } = getConfig()
@@ -44,7 +42,7 @@ export default function App({ Component, pageProps }: AppProps) {
       />
       <button onClick={generateImage}>Generate Image</button>
       <>
-        <img src={imgURL} alt="Person placeholder" />;
+        <img src={imgURL} alt="Robot painting img" />
       </>
     </div>
   )
