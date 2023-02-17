@@ -1,12 +1,17 @@
 import type { AppProps } from 'next/app'
-import { useState } from 'react'
+import { useState, useEffect, ChangeEvent } from 'react'
 import './App.css'
 import { Configuration, OpenAIApi } from 'openai'
 import getConfig from 'next/config'
 
 export default function App({ Component, pageProps }: AppProps) {
   const [imgURL, setImgURL] = useState('/robot-painting_svg.svg')
-  //console.log(imgURL)
+  const [userTextInput, setUserTextInput] = useState('')
+  const [imageTitel, setImageTitle] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [typedText, setTypedText] = useState('')
+
+  const text = 'Generating image...'
 
   const { publicRuntimeConfig } = getConfig()
 
@@ -24,14 +29,37 @@ export default function App({ Component, pageProps }: AppProps) {
   const openai = new OpenAIApi(configuration)
 
   const generateImage = async () => {
+    setLoading(true)
     const response = await openai.createImage({
-      prompt: 'a white siamese cat',
+      prompt: userTextInput,
       n: 1,
       size: '1024x1024',
     })
+    setLoading(false)
+    setUserTextInput('')
     const image_url = response.data.data[0].url
-    console.log('image: ', image_url)
+    setImgURL(image_url || 'no image found')
   }
+
+  const handleUserInput = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setUserTextInput(e.target.value)
+  }
+
+  useEffect(() => {
+    if (loading) {
+      setImageTitle(userTextInput)
+      let i = 0
+      const typing = setInterval(() => {
+        setTypedText(text.slice(0, i))
+        i++
+        if (i > text.length + 1) {
+          i = 0
+          setTypedText('')
+        }
+      }, 100)
+      return () => clearInterval(typing)
+    }
+  }, [loading])
 
   return (
     <div className="app-main">
@@ -39,10 +67,25 @@ export default function App({ Component, pageProps }: AppProps) {
       <textarea
         className="app-input"
         placeholder="Create any type of image you can think of with as much added description as you would like"
+        onChange={(e) => handleUserInput(e)}
+        value={userTextInput}
       />
       <button onClick={generateImage}>Generate Image</button>
       <>
-        <img src={imgURL} alt="Robot painting img" />
+        {loading ? (
+          <>
+            <h4>{typedText}</h4>
+            <div className="ripple-effect">
+              <div></div>
+              <div></div>
+            </div>
+          </>
+        ) : (
+          <>
+            <h4>{imageTitel}</h4>
+            <img src={imgURL} alt="Robot painting img" />
+          </>
+        )}
       </>
     </div>
   )
