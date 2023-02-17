@@ -1,14 +1,21 @@
 import type { AppProps } from 'next/app'
+import { useState } from 'react'
 import './App.css'
 import { Configuration, OpenAIApi } from 'openai'
 import getConfig from 'next/config'
+import pp from './../public/placeholder_person.svg'
 
 export default function App({ Component, pageProps }: AppProps) {
+  const [imgURL, setImgURL] = useState(pp)
+  //console.log(imgURL)
+
   const { publicRuntimeConfig } = getConfig()
+
   const apiKey =
     typeof publicRuntimeConfig !== 'undefined' && publicRuntimeConfig.apiKey
       ? publicRuntimeConfig.apiKey
       : process.env.OPENAI_API_KEY
+
   if (!apiKey) {
     throw new Error('apiKey is not defined in config file')
   }
@@ -23,8 +30,8 @@ export default function App({ Component, pageProps }: AppProps) {
       n: 1,
       size: '1024x1024',
     })
-    const image = response.data
-    console.log(image)
+    const image_url = response.data.data[0].url
+    console.log('image: ', image_url)
   }
 
   return (
@@ -35,6 +42,9 @@ export default function App({ Component, pageProps }: AppProps) {
         placeholder="Create any type of image you can think of with as much added description as you would like"
       />
       <button onClick={generateImage}>Generate Image</button>
+      <>
+        <img src={imgURL} alt="Person placeholder" />;
+      </>
     </div>
   )
 }
