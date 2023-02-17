@@ -1,9 +1,6 @@
-const dotenv = require("dotenv");
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+}
 
-dotenv.config();
-
-module.exports = {
-  publicRuntimeConfig: {
-    apiKey: process.env.OPENAI_API_KEY,
-  },
-};
+module.exports = nextConfig
