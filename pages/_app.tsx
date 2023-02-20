@@ -2,6 +2,7 @@ import type { AppProps } from 'next/app'
 import { useState, useEffect, ChangeEvent } from 'react'
 import './App.css'
 import { Configuration, OpenAIApi } from 'openai'
+import { saveAs } from 'file-saver'
 import getConfig from 'next/config'
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -61,6 +62,12 @@ export default function App({ Component, pageProps }: AppProps) {
     }
   }, [loading])
 
+  const sendEmail = (url = '') => {
+    url = imgURL
+    const message = `Here is your image download link: ${url}`
+    window.location.href = `mailto: someone@example.com?subject=Image Download Link&body=${message}`
+  }
+
   return (
     <div className="app-main">
       <h2>Create images with your mind</h2>
@@ -83,7 +90,12 @@ export default function App({ Component, pageProps }: AppProps) {
         ) : (
           <>
             <h4>{imageTitel}</h4>
-            <img src={imgURL} alt="Robot painting img" />
+            <img
+              src={imgURL}
+              onClick={() => window.open(imgURL)}
+              style={{ cursor: 'pointer' }}
+              alt="Robot painting img"
+            />
           </>
         )}
       </>
