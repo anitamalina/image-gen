@@ -1,18 +1,108 @@
 import type { AppProps } from 'next/app'
-import { useState, useEffect, ChangeEvent } from 'react'
+import { useState, useEffect, ChangeEvent, useRef } from 'react'
 import './App.css'
 import { Configuration, OpenAIApi } from 'openai'
-import { saveAs } from 'file-saver'
 import getConfig from 'next/config'
 
 export default function App({ Component, pageProps }: AppProps) {
-  const [imgURL, setImgURL] = useState('/robot-painting_svg.svg')
+  const [imgURL, setImgURL] = useState('')
   const [userTextInput, setUserTextInput] = useState('')
   const [imageTitel, setImageTitle] = useState('')
   const [loading, setLoading] = useState(false)
-  const [typedText, setTypedText] = useState('')
+  /*   const [typedText, setTypedText] = useState('') */
 
   const text = 'Generating image...'
+  let verbs: string[],
+    nouns: string[],
+    adjectives: string[],
+    preposition: string[],
+    place: string[],
+    preposition2: string[],
+    item: string[]
+  nouns = [
+    'bird',
+    'boy',
+    'duck',
+    'rhinoceros',
+    'hamster',
+    'dog',
+    'bunny',
+    'cat',
+    'mouse',
+    'girl',
+  ]
+  verbs = [
+    'kicked',
+    'ran',
+    'flew',
+    'drank',
+    'sliced',
+    'rolled',
+    'breathed',
+    'jumped',
+    'ate',
+    'shopped',
+  ]
+  adjectives = [
+    'beautiful',
+    'fancy',
+    'dancing',
+    'lovely',
+    'cute',
+    'elegant',
+    'mysterious',
+    'hot',
+    'dirty',
+    'slimy',
+  ]
+  preposition = [
+    'down',
+    'into',
+    'up',
+    'on',
+    'upon',
+    'below',
+    'above',
+    'through',
+    'across',
+    'towards',
+  ]
+  place = [
+    'the moonlight',
+    'the universe',
+    'the beach',
+    'the mountains',
+    'the water',
+    'the ocean',
+    'Mars',
+    'Earth',
+    'Sahara',
+    'clouds',
+  ]
+  preposition2 = [
+    'with',
+    'on',
+    'close to',
+    'behind',
+    'upon',
+    'below',
+    'above',
+    'across',
+    'towards',
+    'next to',
+  ]
+  item = [
+    'a coffee cup',
+    'a shoe',
+    'a star',
+    'a suitcase',
+    'a drone',
+    'a robot',
+    'a elefant',
+    'a diamond',
+    'a magic wond',
+    'a lollipop',
+  ]
 
   const { publicRuntimeConfig } = getConfig()
 
@@ -24,13 +114,13 @@ export default function App({ Component, pageProps }: AppProps) {
   if (!apiKey) {
     throw new Error('apiKey is not defined in config file')
   }
-  console.log(publicRuntimeConfig.apiKey)
 
   const configuration = new Configuration({ apiKey })
   const openai = new OpenAIApi(configuration)
 
   const generateImage = async () => {
     setLoading(true)
+    setImageTitle(userTextInput)
     const response = await openai.createImage({
       prompt: userTextInput,
       n: 1,
@@ -42,25 +132,67 @@ export default function App({ Component, pageProps }: AppProps) {
     setImgURL(image_url || 'no image found')
   }
 
+  const generateRandomImage = async () => {
+    const sentence = generateRandomSentence()
+    setImageTitle(sentence)
+    setLoading(true)
+    const response = await openai.createImage({
+      prompt: sentence,
+      n: 1,
+      size: '1024x1024',
+    })
+    setLoading(false)
+    const image_url = response.data.data[0].url
+    setImgURL(image_url || 'no image found')
+  }
+
+  const generateRandomSentence = () => {
+    var rand1 = Math.floor(Math.random() * 10)
+    var rand2 = Math.floor(Math.random() * 10)
+    var rand3 = Math.floor(Math.random() * 10)
+    var rand4 = Math.floor(Math.random() * 10)
+    var rand5 = Math.floor(Math.random() * 10)
+    var rand6 = Math.floor(Math.random() * 10)
+    var rand7 = Math.floor(Math.random() * 10)
+
+    var sentence =
+      'A ' +
+      adjectives[rand1] +
+      ' ' +
+      nouns[rand2] +
+      ' ' +
+      verbs[rand3] +
+      ' ' +
+      preposition[rand4] +
+      ' ' +
+      place[rand5] +
+      ' ' +
+      preposition2[rand6] +
+      ' ' +
+      item[rand7] +
+      '.'
+
+    return sentence
+  }
+
   const handleUserInput = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setUserTextInput(e.target.value)
   }
 
-  useEffect(() => {
+  /*   useEffect(() => {
     if (loading) {
-      setImageTitle(userTextInput)
       let i = 0
       const typing = setInterval(() => {
         setTypedText(text.slice(0, i))
         i++
-        if (i > text.length + 1) {
+        if (i >= text.length + 1) {
           i = 0
           setTypedText('')
         }
       }, 100)
       return () => clearInterval(typing)
     }
-  }, [loading])
+  }, [loading]) */
 
   const sendEmail = (url = '') => {
     url = imgURL
@@ -77,26 +209,31 @@ export default function App({ Component, pageProps }: AppProps) {
         onChange={(e) => handleUserInput(e)}
         value={userTextInput}
       />
-      <button onClick={generateImage}>Generate Image</button>
+      <button onClick={() => generateImage()}>Generate Image</button>
+      <button className="surprise-btn" onClick={() => generateRandomImage()}>
+        Surprise me
+      </button>
       <>
         {loading ? (
           <>
-            <h4>{typedText}</h4>
+            {/* <h4>{typedText}</h4> */}
             <div className="ripple-effect">
               <div></div>
               <div></div>
             </div>
           </>
-        ) : (
+        ) : imgURL ? (
           <>
             <h4>{imageTitel}</h4>
             <img
               src={imgURL}
               onClick={() => window.open(imgURL)}
               style={{ cursor: 'pointer' }}
-              alt="Robot painting img"
+              alt="Generated Image"
             />
           </>
+        ) : (
+          <></>
         )}
       </>
     </div>
