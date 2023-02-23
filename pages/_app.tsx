@@ -7,9 +7,11 @@ import getConfig from 'next/config'
 export default function App({ Component, pageProps }: AppProps) {
   const [imgURL, setImgURL] = useState('')
   const [userTextInput, setUserTextInput] = useState('')
+  const [count, setCount] = useState(0)
   const [imageTitel, setImageTitle] = useState('')
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [requestErrorMessage, setRequestErrorMessage] = useState('')
   /*   const [typedText, setTypedText] = useState('') */
 
   const text = 'Generating image...'
@@ -123,15 +125,21 @@ export default function App({ Component, pageProps }: AppProps) {
   const generateImage = async () => {
     setLoading(true)
     setImageTitle(userTextInput)
-    const response = await openai.createImage({
-      prompt: userTextInput,
-      n: 1,
-      size: '1024x1024',
-    })
-    setLoading(false)
-    setUserTextInput('')
-    const image_url = response.data.data[0].url
-    setImgURL(image_url || 'no image found')
+    let response: any
+    try {
+      response = await openai.createImage({
+        prompt: userTextInput,
+        n: 1,
+        size: '1024x1024',
+      })
+      const image_url = response.data.data[0].url
+      setImgURL(image_url || 'no image found')
+    } catch (e: any) {
+      setRequestErrorMessage(e.response.data.error.message)
+    } finally {
+      setLoading(false)
+      setUserTextInput('')
+    }
   }
 
   const generateRandomImage = async () => {
@@ -178,6 +186,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
   const handleUserInput = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setUserTextInput(e.target.value)
+    setCount(e.target.value.length)
   }
 
   /*   useEffect(() => {
@@ -208,18 +217,22 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <div className="app-main">
       <h2>Create images with your mind</h2>
-      <textarea
-        className="app-input"
-        placeholder="Create any type of image you can think of with as much added description as you would like"
-        onChange={(e) => handleUserInput(e)}
-        value={userTextInput}
-      />
+      <div className="textarea-box">
+        <textarea
+          className="textarea-input"
+          placeholder="Create any type of image you can think of with as much added description as you would like"
+          onChange={(e) => handleUserInput(e)}
+          value={userTextInput}
+          maxLength={1000}
+        />
+        <p className="small-text">{count} / 1000</p>
+      </div>
       {userTextInput === '' ? (
         <>
           <button className="inactive-btn" onClick={() => emptyInputError()}>
             Generate Image
           </button>
-          {errorMessage && <div className="errorMessage">{errorMessage}</div>}
+          {errorMessage && <p className="errorMessage">{errorMessage}</p>}
         </>
       ) : (
         <button className="active-btn" onClick={() => generateImage()}>
@@ -253,6 +266,7 @@ export default function App({ Component, pageProps }: AppProps) {
           <></>
         )}
       </>
+      <p className='errorMessageRequest'>{requestErrorMessage}</p>
     </div>
   )
 }
