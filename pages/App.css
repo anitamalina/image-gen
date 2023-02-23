@@ -31,30 +31,46 @@ h2 {
 
 button {
     padding: 0.8rem 1rem;
-    background-color:  black;
-    color: white;
-    border: 2px solid black;
     border-radius: 5px;
     font-size: 1rem;
-    cursor: pointer;
     transition: all 0.2s ease-in-out;
     margin-top: 0.5rem;
 }
 
-.surprise-btn {
+.active-btn {
+    background-color:  black;
+    color: white;
+    border: 2px solid black;
+    cursor: pointer;
+}
 
+.inactive-btn {
+    background-color:  hwb(0 0% 100% / 0.3);
+    color: hwb(0 100% 0% / 0.5);
+    border: 2px solid hwb(0 0% 100% / 0.1);
+}
+
+.surprise-btn {
     background-color:  hwb(28 0% 0%); 
-    /* border: 3px solid   hwb(283 0% 40%);  */
+    border: 2px solid black;
+    color: white;
+    cursor: pointer;
 }
 
 .surprise-btn:hover {
     background-color:  hwb(0 0% 90%);
-    /* border: 3px solid   hwb(283 0% 40%);  */
+    cursor: pointer;
 }
 
-button:hover {
-    background-color:  hwb(0 0% 90%);
-    /* border: 3px solid  black; */
+.active-bnt:hover {
+    cursor: pointer;
+}
+
+.errorMessage {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: small;
+    margin-top: 0.2rem;
+    margin-bottom: 0.4rem;
 }
 
 img {

@@ -9,9 +9,11 @@ export default function App({ Component, pageProps }: AppProps) {
   const [userTextInput, setUserTextInput] = useState('')
   const [imageTitel, setImageTitle] = useState('')
   const [loading, setLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
   /*   const [typedText, setTypedText] = useState('') */
 
   const text = 'Generating image...'
+
   let verbs: string[],
     nouns: string[],
     adjectives: string[],
@@ -44,16 +46,16 @@ export default function App({ Component, pageProps }: AppProps) {
     'shopped',
   ]
   adjectives = [
-    'beautiful',
-    'fancy',
-    'dancing',
-    'lovely',
-    'cute',
-    'elegant',
-    'mysterious',
-    'hot',
-    'dirty',
-    'slimy',
+    'A beautiful',
+    'A fancy',
+    'A dancing',
+    'A lovely',
+    'A cute',
+    'An elegant',
+    'A mysterious',
+    'A hot',
+    'A dirty',
+    'A slimy',
   ]
   preposition = [
     'down',
@@ -98,7 +100,7 @@ export default function App({ Component, pageProps }: AppProps) {
     'a suitcase',
     'a drone',
     'a robot',
-    'a elefant',
+    'an elefant',
     'a diamond',
     'a magic wond',
     'a lollipop',
@@ -156,7 +158,6 @@ export default function App({ Component, pageProps }: AppProps) {
     var rand7 = Math.floor(Math.random() * 10)
 
     var sentence =
-      'A ' +
       adjectives[rand1] +
       ' ' +
       nouns[rand2] +
@@ -200,6 +201,10 @@ export default function App({ Component, pageProps }: AppProps) {
     window.location.href = `mailto: someone@example.com?subject=Image Download Link&body=${message}`
   }
 
+  const emptyInputError = () => {
+    setErrorMessage('You need to write a text to generate an image.')
+  }
+
   return (
     <div className="app-main">
       <h2>Create images with your mind</h2>
@@ -209,7 +214,19 @@ export default function App({ Component, pageProps }: AppProps) {
         onChange={(e) => handleUserInput(e)}
         value={userTextInput}
       />
-      <button onClick={() => generateImage()}>Generate Image</button>
+      {userTextInput === '' ? (
+        <>
+          <button className="inactive-btn" onClick={() => emptyInputError()}>
+            Generate Image
+          </button>
+          {errorMessage && <div className="errorMessage">{errorMessage}</div>}
+        </>
+      ) : (
+        <button className="active-btn" onClick={() => generateImage()}>
+          Generate Image
+        </button>
+      )}
+
       <button className="surprise-btn" onClick={() => generateRandomImage()}>
         Surprise me
       </button>
