@@ -123,6 +123,9 @@ export default function App({ Component, pageProps }: AppProps) {
   const openai = new OpenAIApi(configuration)
 
   const generateImage = async () => {
+    if (requestErrorMessage) {
+      setRequestErrorMessage('')
+    }
     setLoading(true)
     setImageTitle(userTextInput)
     let response: any
@@ -136,13 +139,21 @@ export default function App({ Component, pageProps }: AppProps) {
       setImgURL(image_url || 'no image found')
     } catch (e: any) {
       setRequestErrorMessage(e.response.data.error.message)
+      setImgURL('')
     } finally {
       setLoading(false)
       setUserTextInput('')
+      setCount(0)
     }
   }
 
   const generateRandomImage = async () => {
+    if (requestErrorMessage) {
+      setRequestErrorMessage('')
+    }
+    if (errorMessage) {
+      setErrorMessage('')
+    }
     const sentence = generateRandomSentence()
     setImageTitle(sentence)
     setLoading(true)
@@ -186,6 +197,9 @@ export default function App({ Component, pageProps }: AppProps) {
 
   const handleUserInput = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setUserTextInput(e.target.value)
+    if (errorMessage) {
+      setErrorMessage('')
+    }
     setCount(e.target.value.length)
   }
 
@@ -212,6 +226,9 @@ export default function App({ Component, pageProps }: AppProps) {
 
   const emptyInputError = () => {
     setErrorMessage('You need to write a text to generate an image.')
+    if (requestErrorMessage) {
+      setRequestErrorMessage('')
+    }
   }
 
   return (
