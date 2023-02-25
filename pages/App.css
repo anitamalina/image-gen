@@ -24,11 +24,7 @@ h2 {
     justify-content: flex-end;
 }
 
-@media (max-width: 750px) {
-    .textarea-box {
-        width: 80%;
-    }
-}
+
 
 .textarea-input {
     height: 3rem;
@@ -143,6 +139,16 @@ img {
       height: 200px;
       opacity: 0;
       }
+}
+
+@media (max-width: 750px) {
+    .textarea-box {
+        width: 80%;
+    }
+    
+    img {
+        width: 80%;
+    }
 }
 
 
